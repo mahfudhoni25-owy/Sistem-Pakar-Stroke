@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <title>Admin Panel - Daftar User</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --sidebar-width: 220px;
+      --bg-primary: #0a0e1a;
+      --bg-secondary: #0f1724;
+      --text-primary: #ffffff;
+      --text-secondary: #94a3b8;
+      --accent: #3B82F6;
+      --accent-hover: #2563eb;
+      --accent-purple: #8b5cf6;
+      --card-bg: rgba(15, 23, 36, 0.6);
+      --border: rgba(148, 163, 184, 0.1);
+      --danger: #ef4444;
+      --success: #10b981;
+      --warning: #f59e0b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%);
+      animation: gradientShift 20s ease infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(5%, 5%) rotate(120deg); }
+      66% { transform: translate(-5%, 5%) rotate(240deg); }
+    }
+
+    .app {
+      min-height: 100vh;
+      display: flex;
+      position: relative;
+      z-index: 1;
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .content {
+      padding: 28px 32px;
+      animation: fadeInUp 0.6s ease;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-purple));
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .card-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .user-count {
+      padding: 4px 12px;
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: var(--accent);
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    /* Search Box */
+    .search-wrapper {
+      position: relative;
+      margin-bottom: 24px;
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 16px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 18px;
+      color: var(--text-secondary);
+    }
+
+    .search-input {
+      width: 100%;
+      padding: 12px 16px 12px 48px;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      background: rgba(15, 23, 36, 0.4);
+      color: var(--text-primary);
+      font-size: 15px;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    .search-input:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: rgba(15, 23, 36, 0.6);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .search-input::placeholder {
+      color: var(--text-secondary);
+      opacity: 0.5;
+    }
+
+    /* Table */
+    .table-wrapper {
+      overflow-x: auto;
+      border-radius: 12px;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .table thead {
+      background: rgba(15, 23, 36, 0.4);
+    }
+
+    .table th {
+      padding: 16px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .table tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+
+    .table tbody tr:hover {
+      background: rgba(59, 130, 246, 0.05);
+    }
+
+    .table tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    .table td {
+      padding: 16px;
+      font-size: 14px;
+      color: var(--text-primary);
+      vertical-align: middle;
+    }
+
+    .table td strong {
+      font-weight: 600;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .badge-user {
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: var(--accent);
+    }
+
+    .badge-admin {
+      background: rgba(139, 92, 246, 0.15);
+      border: 1px solid rgba(139, 92, 246, 0.3);
+      color: var(--accent-purple);
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-small {
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 13px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-edit {
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: var(--accent);
+    }
+
+    .btn-edit:hover {
+      background: rgba(59, 130, 246, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .btn-delete {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: var(--danger);
+    }
+
+    .btn-delete:hover {
+      background: rgba(239, 68, 68, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .muted {
+      color: var(--text-secondary);
+      font-size: 14px;
+      text-align: center;
+      padding: 40px;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      width: 520px;
+      max-width: 95%;
+      border-radius: 20px;
+      box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5);
+      animation: slideUp 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    @keyframes slideUp {
+      from { 
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to { 
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-purple));
+    }
+
+    .modal-header {
+      padding: 24px 28px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-header h3 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .modal-body {
+      padding: 24px 28px;
+    }
+
+    .form-row {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .form-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+    }
+
+    .input {
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(15, 23, 36, 0.4);
+      color: var(--text-primary);
+      font-size: 15px;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    .input:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: rgba(15, 23, 36, 0.6);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .input:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    select.input {
+      cursor: pointer;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      padding: 20px 28px;
+      border-top: 1px solid var(--border);
+    }
+
+    .btn-cancel {
+      padding: 10px 20px;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-cancel:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-primary);
+    }
+
+    .btn-save {
+      padding: 10px 20px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+      border: none;
+      color: white;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-save:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .content {
+        padding: 20px 16px;
+      }
+
+      .card {
+        padding: 20px;
+      }
+
+      .table-wrapper {
+        overflow-x: scroll;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+
+      .btn-small {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <%- include('partials/sidebar', { user }) %>
+
+  <div class="main">
+
+    <!-- TOPBAR -->
+    <%- include('partials/topbar', { user, title: 'Daftar User' }) %>
+
+    <!-- CONTENT -->
+    <main class="content">
+      <div class="card">
+        <div class="card-header">
+          <h3 class="card-title">
+            <span>👥</span>
+            Daftar User
+          </h3>
+          <span class="user-count" id="userCount">0 Users</span>
+        </div>
+
+        <div class="search-wrapper">
+          <span class="search-icon">🔍</span>
+          <input class="search-input" id="searchUser" placeholder="Cari nama atau username...">
+        </div>
+
+        <div class="table-wrapper">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Nama Lengkap</th>
+                <th>Username</th>
+                <th>Role</th>
+                <th width="180">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="tableUser">
+              <tr>
+                <td colspan="4" class="muted">Memuat data...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </main>
+  </div>
+</div>
+
+<div id="modalRoot" style="display:none;"></div>
+
+<script>
+(function(){
+  const el = (s,c=document)=>c.querySelector(s);
+  const esc = s=>String(s||'').replace(/[&<>"']/g,m=>({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[m]));
+  const api = (u,o={})=>fetch(u,{
+    credentials:'same-origin',
+    headers:{'Content-Type':'application/json'},
+    ...o
+  }).then(r=>r.json());
+
+  const tbody = el('#tableUser');
+  const search = el('#searchUser');
+  const userCount = el('#userCount');
+
+  /* ================= MODAL ================= */
+  function modal(title, html, onSave){
+    el('#modalRoot').style.display='';
+    el('#modalRoot').innerHTML=`
+      <div class="modal-backdrop" onclick="if(event.target===this)closeModal()">
+        <div class="modal">
+          <div class="modal-header">
+            <h3>${title}</h3>
+          </div>
+          <div class="modal-body">
+            ${html}
+          </div>
+          <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModal()">Batal</button>
+            <button class="btn-save" id="btnSave">Simpan</button>
+          </div>
+        </div>
+      </div>`;
+    el('#btnSave').onclick = onSave;
+  }
+  
+  window.closeModal = ()=>{
+    el('#modalRoot').innerHTML='';
+    el('#modalRoot').style.display='none';
+  };
+
+  /* ================= LOAD ================= */
+  async function load(q=''){
+    tbody.innerHTML='<tr><td colspan="4" class="muted">Memuat data...</td></tr>';
+    const r = await api('/admin/user/list'+(q?'?q='+encodeURIComponent(q):''));
+    
+    if(!r.data?.length){
+      tbody.innerHTML='<tr><td colspan="4" class="muted">Belum ada user terdaftar</td></tr>';
+      userCount.textContent = '0 Users';
+      return;
+    }
+    
+    userCount.textContent = `${r.data.length} User${r.data.length > 1 ? 's' : ''}`;
+    tbody.innerHTML='';
+    
+    r.data.forEach(u=>{
+      const roleClass = u.role === 'admin' ? 'badge-admin' : 'badge-user';
+      tbody.innerHTML+=`
+        <tr>
+          <td><strong>${esc(u.nama)}</strong></td>
+          <td>${esc(u.username)}</td>
+          <td><span class="badge ${roleClass}">${esc(u.role)}</span></td>
+          <td>
+            <div class="actions">
+              <button class="btn-small btn-edit" onclick="edit('${u.id}')">
+                ✏️ Edit
+              </button>
+              ${u.role!=='admin'
+                ? `<button class="btn-small btn-delete" onclick="hapus('${u.id}')">
+                    🗑️ Hapus
+                  </button>`
+                : ''
+              }
+            </div>
+          </td>
+        </tr>`;
+    });
+  }
+
+  /* ================= ACTIONS ================= */
+  window.edit = id=>{
+    api('/admin/user/list').then(r=>{
+      const u = r.data.find(x=>x.id==id);
+      modal('Edit User',`
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Nama Lengkap</label>
+            <input class="input" value="${esc(u.nama)}" disabled>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Username</label>
+            <input class="input" value="${esc(u.username)}" disabled>
+          </div>
+          <div class="form-group">
+            <label class="form-label">Role</label>
+            <select class="input" id="role">
+              <option value="user" ${u.role==='user'?'selected':''}>User</option>
+              <option value="admin" ${u.role==='admin'?'selected':''}>Admin</option>
+            </select>
+          </div>
+        </div>
+      `,async()=>{
+        await api('/admin/user/update/'+id,{
+          method:'PUT',
+          body:JSON.stringify({role:el('#role').value})
+        });
+        closeModal();
+        load(search.value);
+      });
+    });
+  };
+
+  window.hapus = async id=>{
+    if(!confirm('Apakah Anda yakin ingin menghapus user ini? Tindakan ini tidak dapat dibatalkan.'))return;
+    await api('/admin/user/delete/'+id,{method:'DELETE'});
+    load(search.value);
+  };
+
+  search.oninput=()=>load(search.value);
+  
+  // Close modal on ESC key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && el('#modalRoot').style.display !== 'none') {
+      closeModal();
+    }
+  });
+  
+  load();
+})();
+</script>
+</body>
+</html>

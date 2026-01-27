@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <title>Admin Panel - Kelola Relasi</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <style>
+    :root{
+      --sidebar-width: 220px;
+      --bg-primary: #0a0e1a;
+      --bg-secondary: #0f1724;
+      --text-primary: #ffffff;
+      --text-secondary: #94a3b8;
+      --accent: #3B82F6;
+      --accent-hover: #2563eb;
+      --accent-purple: #8b5cf6;
+      --card-bg: rgba(15, 23, 36, 0.6);
+      --border: rgba(148, 163, 184, 0.1);
+      --danger: #ef4444;
+      --success: #10b981;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.08) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.08) 0%, transparent 50%);
+      animation: gradientShift 20s ease infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(5%, 5%) rotate(120deg); }
+      66% { transform: translate(-5%, 5%) rotate(240deg); }
+    }
+
+    .app {
+      min-height: 100vh;
+      display: flex;
+      position: relative;
+      z-index: 1;
+    }
+
+    .main {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .content {
+      padding: 28px 32px;
+      animation: fadeInUp 0.6s ease;
+    }
+
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-purple));
+    }
+
+    .card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--border);
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .card-title {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .relasi-count {
+      padding: 4px 12px;
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: var(--accent);
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .card-description {
+      color: var(--text-secondary);
+      font-size: 14px;
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .btn-add {
+      padding: 10px 20px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-add:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    }
+
+    .table-wrapper {
+      overflow-x: auto;
+      border-radius: 12px;
+    }
+
+    .table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .table thead {
+      background: rgba(15, 23, 36, 0.4);
+    }
+
+    .table th {
+      padding: 16px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .table tbody tr {
+      border-bottom: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+
+    .table tbody tr:hover {
+      background: rgba(59, 130, 246, 0.05);
+    }
+
+    .table tbody tr:last-child {
+      border-bottom: none;
+    }
+
+    .table td {
+      padding: 16px;
+      font-size: 14px;
+      color: var(--text-primary);
+      vertical-align: middle;
+    }
+
+    .table td strong {
+      font-weight: 600;
+    }
+
+    .bobot-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--success);
+      font-family: 'Courier New', monospace;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-small {
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-weight: 600;
+      font-size: 13px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-edit {
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: var(--accent);
+    }
+
+    .btn-edit:hover {
+      background: rgba(59, 130, 246, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .btn-delete {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: var(--danger);
+    }
+
+    .btn-delete:hover {
+      background: rgba(239, 68, 68, 0.25);
+      transform: translateY(-2px);
+    }
+
+    .muted {
+      color: var(--text-secondary);
+      font-size: 14px;
+      text-align: center;
+      padding: 40px;
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    .modal {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      width: 580px;
+      max-width: 95%;
+      border-radius: 20px;
+      box-shadow: 0 40px 80px rgba(0, 0, 0, 0.5);
+      animation: slideUp 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    @keyframes slideUp {
+      from { 
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to { 
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .modal::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-purple));
+    }
+
+    .modal-header {
+      padding: 24px 28px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-header h3 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .modal-body {
+      padding: 24px 28px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .form-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.3px;
+      margin-bottom: 8px;
+    }
+
+    .input, select {
+      width: 100%;
+      padding: 12px 16px;
+      border-radius: 10px;
+      border: 1px solid var(--border);
+      background: rgba(15, 23, 36, 0.4);
+      color: var(--text-primary);
+      font-size: 15px;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.3s ease;
+    }
+
+    .input:focus, select:focus {
+      outline: none;
+      border-color: var(--accent);
+      background: rgba(15, 23, 36, 0.6);
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .input::placeholder {
+      color: var(--text-secondary);
+      opacity: 0.5;
+    }
+
+    select {
+      cursor: pointer;
+    }
+
+    select option {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+      padding: 10px;
+    }
+
+    .modal-footer {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      padding: 20px 28px;
+      border-top: 1px solid var(--border);
+    }
+
+    .btn-cancel {
+      padding: 10px 20px;
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+      border-radius: 10px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-cancel:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-primary);
+    }
+
+    .btn-save {
+      padding: 10px 20px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+      border: none;
+      color: white;
+      border-radius: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-save:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    }
+
+    .info-box {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 10px;
+      padding: 12px 16px;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .info-icon {
+      font-size: 16px;
+      flex-shrink: 0;
+    }
+
+    .info-text {
+      font-size: 13px;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    @media (max-width: 768px) {
+      .content {
+        padding: 20px 16px;
+      }
+
+      .card {
+        padding: 20px;
+      }
+
+      .card-header {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .btn-add {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .table-wrapper {
+        overflow-x: scroll;
+      }
+
+      .actions {
+        flex-direction: column;
+      }
+
+      .btn-small {
+        width: 100%;
+        justify-content: center;
+      }
+    }
+  </style>
+</head>
+
+<body>
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <%- include('partials/sidebar', { user }) %>
+
+  <div class="main">
+
+    <!-- TOPBAR -->
+    <%- include('partials/topbar', { user, title: 'Kelola Relasi' }) %>
+
+    <!-- CONTENT -->
+    <main class="content">
+
+      <div class="card">
+        <div class="card-header">
+          <div style="display: flex; align-items: center; gap: 12px;">
+            <h3 class="card-title">
+              <span>🔗</span>
+              Kelola Relasi Penyakit & Gejala
+            </h3>
+            <span class="relasi-count" id="relasiCount">0 Relasi</span>
+          </div>
+          <button class="btn-add" id="btnAddRelasi">
+            <span>+</span>
+            Tambah Relasi
+          </button>
+        </div>
+
+        <p class="card-description">
+          Relasi digunakan sebagai bobot keterkaitan antara penyakit dan gejala untuk menghitung tingkat keyakinan diagnosa menggunakan metode Certainty Factor.
+        </p>
+
+        <div class="table-wrapper">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Penyakit</th>
+                <th>Gejala</th>
+                <th width="120">Bobot (CF)</th>
+                <th width="180">Aksi</th>
+              </tr>
+            </thead>
+            <tbody id="tableRelasi">
+              <tr>
+                <td colspan="4" class="muted">Memuat data...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </main>
+  </div>
+</div>
+
+<div id="modalRoot" style="display:none;"></div>
+
+<script>
+(function(){
+  const el = (s,c=document)=>c.querySelector(s);
+  const esc = s=>String(s||'').replace(/[&<>"']/g,m=>({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[m]));
+
+  const api = (u,o={})=>fetch(u,{
+    credentials:'same-origin',
+    headers:{'Content-Type':'application/json'},
+    ...o
+  }).then(r=>r.json());
+
+  const tbody = el('#tableRelasi');
+  const btnAdd = el('#btnAddRelasi');
+  const relasiCount = el('#relasiCount');
+
+  /* ================= MODAL ================= */
+  function modal(title, html, onSave){
+    el('#modalRoot').style.display='';
+    el('#modalRoot').innerHTML=`
+      <div class="modal-backdrop" onclick="if(event.target===this)closeModal()">
+        <div class="modal">
+          <div class="modal-header">
+            <h3>${title}</h3>
+          </div>
+          <div class="modal-body">
+            ${html}
+          </div>
+          <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeModal()">Batal</button>
+            <button class="btn-save" id="btnSave">Simpan</button>
+          </div>
+        </div>
+      </div>`;
+    el('#btnSave').onclick = onSave;
+  }
+  
+  window.closeModal = ()=>{
+    el('#modalRoot').innerHTML='';
+    el('#modalRoot').style.display='none';
+  };
+
+  /* ================= LOAD ================= */
+  async function load(){
+    tbody.innerHTML='<tr><td colspan="4" class="muted">Memuat data...</td></tr>';
+    const r = await api('/admin/relasi/list');
+    
+    if(!r.data?.length){
+      tbody.innerHTML='<tr><td colspan="4" class="muted">Belum ada relasi penyakit & gejala</td></tr>';
+      relasiCount.textContent = '0 Relasi';
+      return;
+    }
+    
+    relasiCount.textContent = `${r.data.length} Relasi`;
+    tbody.innerHTML='';
+    
+    r.data.forEach(x=>{
+      tbody.innerHTML+=`
+        <tr>
+          <td><strong>${esc(x.penyakit_nama)}</strong></td>
+          <td>${esc(x.gejala_nama)}</td>
+          <td><span class="bobot-badge">${esc(x.bobot)}</span></td>
+          <td>
+            <div class="actions">
+              <button class="btn-small btn-edit" onclick="edit('${x.id}')">
+                ✏️ Edit
+              </button>
+              <button class="btn-small btn-delete" onclick="hapus('${x.id}')">
+                🗑️ Hapus
+              </button>
+            </div>
+          </td>
+        </tr>`;
+    });
+  }
+
+  /* ================= TAMBAH ================= */
+  btnAdd.onclick = async ()=>{
+    const [p,g] = await Promise.all([
+      api('/admin/penyakit/list'),
+      api('/admin/gejala/list')
+    ]);
+
+    modal('Tambah Relasi Baru',`
+      <div class="info-box">
+        <span class="info-icon">💡</span>
+        <span class="info-text">Bobot (CF) berkisar antara 0 sampai 1. Semakin mendekati 1, semakin kuat keterkaitan gejala dengan penyakit.</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Pilih Penyakit</label>
+        <select class="input" id="penyakit">
+          <option value="">-- Pilih Penyakit --</option>
+          ${p.data.map(x=>`<option value="${x.id}">${esc(x.nama)}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Pilih Gejala</label>
+        <select class="input" id="gejala">
+          <option value="">-- Pilih Gejala --</option>
+          ${g.data.map(x=>`<option value="${x.id}">${esc(x.nama)}</option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Bobot (CF)</label>
+        <input class="input" id="bobot" type="number" step="0.1" min="0" max="1" placeholder="Masukkan bobot (0 - 1)" value="1">
+      </div>
+    `,async()=>{
+      const penyakit_id = el('#penyakit').value;
+      const gejala_id = el('#gejala').value;
+      const bobot = el('#bobot').value;
+      
+      if (!penyakit_id || !gejala_id || !bobot) {
+        alert('Semua field harus diisi!');
+        return;
+      }
+      
+      if (parseFloat(bobot) < 0 || parseFloat(bobot) > 1) {
+        alert('Bobot harus antara 0 sampai 1!');
+        return;
+      }
+      
+      await api('/admin/relasi/create',{
+        method:'POST',
+        body:JSON.stringify({ penyakit_id, gejala_id, bobot })
+      });
+      closeModal();
+      load();
+    });
+  };
+
+  /* ================= EDIT ================= */
+  window.edit = async id=>{
+    const r = (await api('/admin/relasi/list')).data.find(x=>x.id==id);
+    const [p,g] = await Promise.all([
+      api('/admin/penyakit/list'),
+      api('/admin/gejala/list')
+    ]);
+
+    modal('Edit Relasi',`
+      <div class="info-box">
+        <span class="info-icon">💡</span>
+        <span class="info-text">Bobot (CF) berkisar antara 0 sampai 1. Semakin mendekati 1, semakin kuat keterkaitan gejala dengan penyakit.</span>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Pilih Penyakit</label>
+        <select class="input" id="penyakit">
+          ${p.data.map(x=>`
+            <option value="${x.id}" ${x.id==r.penyakit_id?'selected':''}>
+              ${esc(x.nama)}
+            </option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Pilih Gejala</label>
+        <select class="input" id="gejala">
+          ${g.data.map(x=>`
+            <option value="${x.id}" ${x.id==r.gejala_id?'selected':''}>
+              ${esc(x.nama)}
+            </option>`).join('')}
+        </select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Bobot (CF)</label>
+        <input class="input" id="bobot" type="number" step="0.1" min="0" max="1" value="${esc(r.bobot)}">
+      </div>
+    `,async()=>{
+      const penyakit_id = el('#penyakit').value;
+      const gejala_id = el('#gejala').value;
+      const bobot = el('#bobot').value;
+      
+      if (!penyakit_id || !gejala_id || !bobot) {
+        alert('Semua field harus diisi!');
+        return;
+      }
+      
+      if (parseFloat(bobot) < 0 || parseFloat(bobot) > 1) {
+        alert('Bobot harus antara 0 sampai 1!');
+        return;
+      }
+      
+      await api('/admin/relasi/update/'+id,{
+        method:'PUT',
+        body:JSON.stringify({ penyakit_id, gejala_id, bobot })
+      });
+      closeModal();
+      load();
+    });
+  };
+
+  /* ================= DELETE ================= */
+  window.hapus = async id=>{
+    if(!confirm('Apakah Anda yakin ingin menghapus relasi ini? Tindakan ini tidak dapat dibatalkan.'))return;
+    await api('/admin/relasi/delete/'+id,{method:'DELETE'});
+    load();
+  };
+
+  // Close modal on ESC
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && el('#modalRoot').style.display !== 'none') {
+      closeModal();
+    }
+  });
+
+  load();
+})();
+</script>
+</body>
+</html>

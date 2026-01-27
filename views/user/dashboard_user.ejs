@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Dashboard - NeuroDetect</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg-primary: #0a0e1a;
+      --bg-secondary: #0f1724;
+      --text-primary: #ffffff;
+      --text-secondary: #94a3b8;
+      --accent: #3B82F6;
+      --accent-hover: #2563eb;
+      --accent-purple: #8b5cf6;
+      --card-bg: rgba(15, 23, 36, 0.6);
+      --border: rgba(148, 163, 184, 0.1);
+      --glow: rgba(59, 130, 246, 0.2);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
+      animation: gradientShift 20s ease infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(5%, 5%) rotate(120deg); }
+      66% { transform: translate(-5%, 5%) rotate(240deg); }
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(10, 14, 26, 0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+
+    header.scrolled {
+      background: rgba(10, 14, 26, 0.95);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text-primary);
+      transition: transform 0.3s ease;
+    }
+
+    .brand:hover {
+      transform: scale(1.02);
+    }
+
+    .logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+      overflow: hidden; /* tambahkan ini */
+    }
+
+    .logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover; /* agar gambar fit dengan baik */
+    }
+
+    .brand-text div:first-child {
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .brand-text div:last-child {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    nav {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .nav-link {
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-weight: 500;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .nav-link::before {
+      content: '';
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%) scaleX(0);
+      width: 20px;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 2px;
+      transition: transform 0.3s ease;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      color: var(--text-primary);
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    .nav-link:hover::before {
+      transform: translateX(-50%) scaleX(1);
+    }
+
+    .user-menu {
+      position: relative;
+    }
+
+    .user-trigger {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 8px 12px;
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .user-trigger:hover {
+      background: rgba(15, 23, 36, 0.8);
+      border-color: rgba(59, 130, 246, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .user-avatar {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 14px;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .user-info {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .user-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+    }
+
+    .user-role {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    .dropdown-icon {
+      color: var(--text-secondary);
+      font-size: 12px;
+      transition: transform 0.3s ease;
+    }
+
+    .user-menu.active .dropdown-icon {
+      transform: rotate(180deg);
+    }
+
+    .user-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      min-width: 200px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 8px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(-10px);
+      transition: all 0.3s ease;
+    }
+
+    .user-menu.active .user-dropdown {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+
+    .dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 10px 12px;
+      color: var(--text-secondary);
+      text-decoration: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      transition: all 0.3s ease;
+    }
+
+    .dropdown-item:hover {
+      background: rgba(59, 130, 246, 0.1);
+      color: var(--text-primary);
+    }
+
+    .dropdown-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 8px 0;
+    }
+
+    .dropdown-item.logout {
+      color: #ef4444;
+    }
+
+    .dropdown-item.logout:hover {
+      background: rgba(239, 68, 68, 0.1);
+    }
+
+    .hero-wrap {
+      padding: 120px 0 80px;
+      position: relative;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 100px;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 24px;
+      animation: fadeInUp 0.6s ease;
+    }
+
+    .badge::before {
+      content: '✦';
+      animation: spin 3s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    h1 {
+      font-size: 64px;
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 24px;
+      background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: fadeInUp 0.6s ease 0.1s backwards;
+    }
+
+    p.lead {
+      font-size: 18px;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+      max-width: 540px;
+      line-height: 1.7;
+      animation: fadeInUp 0.6s ease 0.2s backwards;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 48px;
+      animation: fadeInUp 0.6s ease 0.3s backwards;
+    }
+
+    .btn {
+      padding: 14px 28px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 15px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+      color: white;
+      box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .btn-primary:hover::before {
+      left: 100%;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(59, 130, 246, 0.4);
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-primary);
+      border-color: rgba(148, 163, 184, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .features {
+      display: flex;
+      gap: 32px;
+      flex-wrap: wrap;
+      animation: fadeInUp 0.6s ease 0.4s backwards;
+    }
+
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .feature::before {
+      content: '✓';
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(59, 130, 246, 0.15);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    .hero-visual {
+      position: relative;
+      animation: fadeInUp 0.6s ease 0.2s backwards;
+    }
+
+    .card-hero {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 32px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+    }
+
+    .card-hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+      animation: rotate 20s linear infinite;
+    }
+
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .card-hero img {
+      width: 100%;
+      height: auto;
+      border-radius: 16px;
+      position: relative;
+      z-index: 1;
+      display: block;
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .stat-card {
+      background: rgba(15, 23, 36, 0.5);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+      background: rgba(59, 130, 246, 0.05);
+      border-color: rgba(59, 130, 246, 0.3);
+      transform: translateY(-4px);
+    }
+
+    .stat-number {
+      font-size: 32px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .guide-section {
+      padding: 100px 0;
+      position: relative;
+    }
+
+    .section-header {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto 64px;
+    }
+
+    .section-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      background: rgba(139, 92, 246, 0.1);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      border-radius: 100px;
+      color: var(--accent-purple);
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .section-title {
+      font-size: 48px;
+      font-weight: 900;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .section-description {
+      font-size: 18px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .guide-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .guide-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .guide-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-purple));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+
+    .guide-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .guide-card:hover {
+      transform: translateY(-8px);
+      background: rgba(15, 23, 36, 0.8);
+      border-color: rgba(59, 130, 246, 0.3);
+      box-shadow: 0 20px 60px rgba(59, 130, 246, 0.15);
+    }
+
+    .guide-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 900;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+      color: white;
+    }
+
+    .guide-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+    }
+
+    .guide-desc {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .about-section {
+      padding: 100px 0;
+      background: linear-gradient(180deg, transparent 0%, rgba(15, 23, 36, 0.5) 100%);
+    }
+
+    .about-content {
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .about-header {
+      font-size: 48px;
+      font-weight: 900;
+      margin-bottom: 24px;
+      background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .about-text {
+      font-size: 17px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-bottom: 20px;
+    }
+
+    .site-footer {
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border);
+      padding: 60px 0 30px;
+      margin-top: 0;
+    }
+
+    .footer-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 48px;
+    }
+
+    .footer-brand {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .footer-brand-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .footer-logo {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: 700;
+    }
+
+    .footer-brand h3 {
+      font-size: 18px;
+      margin: 0;
+      color: var(--text-primary);
+    }
+
+    .footer-brand p {
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .footer-col h4 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+    }
+
+    .footer-col a {
+      display: block;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 14px;
+      margin-bottom: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .footer-col a:hover {
+      color: var(--accent);
+      transform: translateX(4px);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    @media (max-width: 1024px) {
+      h1 { font-size: 48px; }
+      .hero { grid-template-columns: 1fr; gap: 40px; }
+      .guide-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      nav { display: none; }
+    }
+
+    @media (max-width: 640px) {
+      h1 { font-size: 36px; }
+      p.lead { font-size: 16px; }
+      .hero-cta { flex-direction: column; }
+      .stats-grid { grid-template-columns: 1fr; }
+      .section-title, .about-header { font-size: 32px; }
+      .footer-grid { grid-template-columns: 1fr; }
+      .user-info { display: none; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header id="header">
+      <div class="header-content">
+        <a href="/" class="brand">
+          <div class="logo">
+            <img src="/images/logo_nd.jpg" alt="NeuroDetect Logo">
+          </div>
+          <div class="brand-text">
+            <div>NeuroDetect</div>
+            <div>Web Deteksi Dini Penyakit Stroke</div>
+          </div>
+        </a>
+
+        <nav>
+          <a href="/" class="nav-link active">Beranda</a>
+          <a href="/diagnosa" class="nav-link">Diagnosa</a>
+          <a href="/riwayat" class="nav-link">Riwayat</a>
+          <a href="#panduan" class="nav-link">Panduan</a>
+          <a href="#tentang" class="nav-link">Tentang Website</a>
+        </nav>
+
+        <div class="user-menu" id="userMenu">
+          <div class="user-trigger" onclick="toggleUserMenu()">
+            <div class="user-avatar"><%= user.nama.charAt(0).toUpperCase() %></div>
+            <div class="user-info">
+              <div class="user-name"><%= user.nama %></div>
+              <div class="user-role">User</div>
+            </div>
+            <span class="dropdown-icon">▼</span>
+          </div>
+
+          <div class="user-dropdown">
+            <a href="/diagnosa" class="dropdown-item">
+              <span>🩺</span>
+              <span>Diagnosa</span>
+            </a>
+            <a href="/riwayat" class="dropdown-item">
+              <span>📄</span>
+              <span>Riwayat</span>
+            </a>
+            <div class="dropdown-divider"></div>
+            <a href="/logout" class="dropdown-item logout">
+              <span>🔐</span>
+              <span>Logout</span>
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="hero-wrap" role="main">
+      <div class="hero">
+        <section class="hero-content">
+          <span class="badge">Selamat Datang Kembali, <%= user.nama %>!</span>
+          <h1>Sistem Pakar Deteksi Dini Penyakit Stroke</h1>
+          <p class="lead">Deteksi penyakit neurologis tingkat lanjut menggunakan metodologi Forward Chaining dan Certainty Factor. Dapatkan wawasan akurat dan tindakan yang direkomendasikan berdasarkan gejala yang anda pilih.</p>
+
+          <div class="hero-cta">
+            <a class="btn btn-primary" href="/diagnosa">Diagnosa Sekarang →</a>
+            <a href="/riwayat" class="btn btn-ghost">Lihat Riwayat</a>
+          </div>
+
+          <div class="features">
+            <div class="feature">Real-time Analysis</div>
+            <div class="feature">Forward Chaining Method</div>
+            <div class="feature">Certainty Factor Method</div>
+          </div>
+        </section>
+
+        <aside class="hero-visual">
+          <div class="card-hero">
+            <img src="/images/hero-brain.jpg" alt="Brain illustration" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=600&h=600&fit=crop'">
+            
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-number">98%</div>
+                <div class="stat-label">Akurasi</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number">5K+</div>
+                <div class="stat-label">Pengguna</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">Tersedia</div>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <section id="panduan" class="guide-section">
+      <div class="section-header">
+        <div class="section-badge">Cara Kerja</div>
+        <h2 class="section-title">Panduan Penggunaan</h2>
+        <p class="section-description">Panduan singkat cara memakai NeuroDetect untuk mendapatkan diagnosa dini secara cepat dan akurat.</p>
+      </div>
+
+      <div class="guide-grid">
+        <div class="guide-card">
+          <div class="guide-icon">1</div>
+          <div class="guide-title">Pilih Gejala (Select Symptoms)</div>
+          <div class="guide-desc">
+            Masuk ke halaman Diagnosa dan pilih semua gejala yang Anda rasakan dari daftar. Anda bisa memilih lebih dari satu gejala. Pastikan memilih gejala yang paling sesuai untuk akurasi yang lebih baik.
+          </div>
+        </div>
+
+        <div class="guide-card">
+          <div class="guide-icon">2</div>
+          <div class="guide-title">Analisis AI (Forward Chaining + CF)</div>
+          <div class="guide-desc">
+            Sistem memproses input Anda menggunakan metode Forward Chaining untuk memilih kandidat penyakit, lalu menggabungkan bobot MB/MD (Certainty Factor) untuk menghitung tingkat keyakinan akhir.
+          </div>
+        </div>
+
+        <div class="guide-card">
+          <div class="guide-icon">3</div>
+          <div class="guide-title">Hasil & Rekomendasi (Get Results)</div>
+          <div class="guide-desc">
+            Lihat hasil diagnosa yang menampilkan nama penyakit, persentase tingkat keyakinan, deskripsi singkat, dan saran penanganan. Simpan riwayat diagnosa untuk referensi di masa depan.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tentang Section -->
+    <section id="tentang" class="about-section" aria-labelledby="aboutTitle">
+      <div class="about-content">
+        <div class="section-badge">Tentang Kami</div>
+        <h3 id="aboutTitle" class="about-header">Tentang NeuroDetect</h3>
+        <p class="about-text">
+          NeuroDetect adalah sistem pakar berbasis web yang dirancang untuk membantu deteksi dini kondisi neurologis, seperti stroke, menggunakan pendekatan rule-based (Forward Chaining) dan metode Certainty Factor. Sistem ini bertujuan memberikan rekomendasi awal yang dapat membantu pengguna atau tenaga kesehatan dalam mengambil langkah lanjutan.
+        </p>
+        <p class="about-text">
+          Fitur utama: manajemen gejala dan penyakit (admin), proses diagnosa berbasis aturan, perhitungan tingkat keyakinan (CF), dan riwayat diagnosa untuk referensi. Aplikasi ini dibuat untuk tujuan penelitian dan edukasi — bukan pengganti diagnosis medis profesional.
+        </p>
+      </div>
+    </section>
+
+  </div> <!-- end container -->
+
+  <!-- Footer -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-brand-header">
+            <div class="footer-logo">ND</div>
+            <div>
+              <h3>NeuroDetect</h3>
+              <p style="font-size:13px;margin-top:4px">Advanced neurological disease detection system powered by AI</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="#panduan">Fitur</a>
+          <a href="#panduan">How it Works</a>
+          <a href="#tentang">Pricing</a>
+        </div>
+
+        <div class="footer-col">
+          <h4>Perusahaan</h4>
+          <a href="#tentang">Tentang Kami</a>
+          <a href="/about">Kontak</a>
+          <a href="/about">Kebijakan Privasi</a>
+        </div>
+
+        <div class="footer-col">
+          <h4>Support</h4>
+          <a href="/about">Dokumentasi</a>
+          <a href="/about">Help Center</a>
+          <a href="/about">FAQ</a>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>© 2025 NeuroDetect. All rights reserved.</div>
+        <div>Powered by Readdy</div>
+      </div>
+    </div>
+  </footer>
+
+<script>
+  // Header scroll effect
+  const header = document.getElementById('header');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 50) {
+      header.classList.add('scrolled');
+    } else {
+      header.classList.remove('scrolled');
+    }
+  });
+
+  // User menu toggle - HARUS di global scope agar bisa diakses dari onclick
+  function toggleUserMenu() {
+    const userMenu = document.getElementById('userMenu');
+    userMenu.classList.toggle('active');
+  }
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    const userMenu = document.getElementById('userMenu');
+    if (!userMenu.contains(e.target)) {
+      userMenu.classList.remove('active');
+    }
+  });
+
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      e.preventDefault();
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    });
+  });
+</script>
+</body>
+</html>

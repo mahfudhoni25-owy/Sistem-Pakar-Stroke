@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title><%= title || 'NeuroDetect' %></title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --bg-primary: #0a0e1a;
+      --bg-secondary: #0f1724;
+      --text-primary: #ffffff;
+      --text-secondary: #94a3b8;
+      --accent: #3B82F6;
+      --accent-hover: #2563eb;
+      --accent-purple: #8b5cf6;
+      --card-bg: rgba(15, 23, 36, 0.6);
+      --border: rgba(148, 163, 184, 0.1);
+      --glow: rgba(59, 130, 246, 0.2);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    html { scroll-behavior: smooth; }
+    
+    body {
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-primary);
+      overflow-x: hidden;
+      line-height: 1.6;
+    }
+
+    /* Animated background gradient */
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.15) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.15) 0%, transparent 50%);
+      animation: gradientShift 20s ease infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    @keyframes gradientShift {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(5%, 5%) rotate(120deg); }
+      66% { transform: translate(-5%, 5%) rotate(240deg); }
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: rgba(10, 14, 26, 0.8);
+      backdrop-filter: blur(20px);
+      border-bottom: 1px solid var(--border);
+      transition: all 0.3s ease;
+    }
+
+    header.scrolled {
+      background: rgba(10, 14, 26, 0.95);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    }
+
+    .header-content {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: var(--text-primary);
+      transition: transform 0.3s ease;
+    }
+
+    .brand:hover {
+      transform: scale(1.02);
+    }
+
+    .logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+      overflow: hidden; /* tambahkan ini */
+    }
+
+    .logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover; /* agar gambar fit dengan baik */
+    }
+
+    .brand-text {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-text div:first-child {
+      font-size: 20px;
+      font-weight: 800;
+    }
+
+    .brand-text div:last-child {
+      font-size: 11px;
+      color: var(--text-secondary);
+    }
+
+    nav {
+      display: flex;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .nav-link {
+      color: var(--text-secondary);
+      text-decoration: none;
+      padding: 10px 18px;
+      border-radius: 10px;
+      font-weight: 500;
+      font-size: 14px;
+      transition: all 0.3s ease;
+      position: relative;
+    }
+
+    .nav-link::before {
+      content: '';
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%) scaleX(0);
+      width: 20px;
+      height: 2px;
+      background: var(--accent);
+      border-radius: 2px;
+      transition: transform 0.3s ease;
+    }
+
+    .nav-link:hover, .nav-link.active {
+      color: var(--text-primary);
+      background: rgba(59, 130, 246, 0.1);
+    }
+
+    .nav-link:hover::before {
+      transform: translateX(-50%) scaleX(1);
+    }
+
+    .cta {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .user-greeting {
+      margin-right: 8px;
+      color: var(--text-secondary);
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .btn-ghost {
+      background: transparent;
+      color: var(--text-secondary);
+      border: 1px solid var(--border);
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      text-decoration: none;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-ghost:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-primary);
+      border-color: rgba(148, 163, 184, 0.3);
+      transform: translateY(-2px);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+      color: white;
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 14px;
+      text-decoration: none;
+      box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s ease;
+    }
+
+    .btn-primary:hover::before {
+      left: 100%;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 12px 32px rgba(59, 130, 246, 0.4);
+    }
+
+    /* Hero Section */
+    .hero-wrap {
+      padding: 120px 0 80px;
+      position: relative;
+    }
+
+    .hero {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+
+    .hero-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.2);
+      border-radius: 100px;
+      color: var(--accent);
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 24px;
+      animation: fadeInUp 0.6s ease;
+    }
+
+    .badge::before {
+      content: '✦';
+      animation: spin 3s linear infinite;
+    }
+
+    @keyframes spin {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    h1 {
+      font-size: 64px;
+      font-weight: 900;
+      line-height: 1.1;
+      margin-bottom: 24px;
+      background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: fadeInUp 0.6s ease 0.1s backwards;
+    }
+
+    p.lead {
+      font-size: 18px;
+      color: var(--text-secondary);
+      margin-bottom: 32px;
+      max-width: 540px;
+      line-height: 1.7;
+      animation: fadeInUp 0.6s ease 0.2s backwards;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(30px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .hero-cta {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 48px;
+      animation: fadeInUp 0.6s ease 0.3s backwards;
+    }
+
+    .features {
+      display: flex;
+      gap: 32px;
+      flex-wrap: wrap;
+      animation: fadeInUp 0.6s ease 0.4s backwards;
+    }
+
+    .feature {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .feature::before {
+      content: '✓';
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: rgba(59, 130, 246, 0.15);
+      color: var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    /* Hero Visual */
+    .hero-visual {
+      position: relative;
+      animation: fadeInUp 0.6s ease 0.2s backwards;
+    }
+
+    .card-hero {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 24px;
+      padding: 32px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      position: relative;
+      overflow: hidden;
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-20px); }
+    }
+
+    .card-hero::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+      animation: rotate 20s linear infinite;
+    }
+
+    @keyframes rotate {
+      from { transform: rotate(0deg); }
+      to { transform: rotate(360deg); }
+    }
+
+    .card-hero img {
+      width: 100%;
+      height: auto;
+      border-radius: 16px;
+      position: relative;
+      z-index: 1;
+      display: block;
+    }
+
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 24px;
+    }
+
+    .stat-card {
+      background: rgba(15, 23, 36, 0.5);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .stat-card:hover {
+      background: rgba(59, 130, 246, 0.05);
+      border-color: rgba(59, 130, 246, 0.3);
+      transform: translateY(-4px);
+    }
+
+    .stat-number {
+      font-size: 32px;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 4px;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    /* Guide Section */
+    .guide-section {
+      padding: 100px 0;
+      position: relative;
+    }
+
+    .guide-header {
+      text-align: center;
+      max-width: 700px;
+      margin: 0 auto 64px;
+    }
+
+    .section-badge {
+      display: inline-block;
+      padding: 6px 12px;
+      background: rgba(139, 92, 246, 0.1);
+      border: 1px solid rgba(139, 92, 246, 0.2);
+      border-radius: 100px;
+      color: var(--accent-purple);
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .guide-header h2 {
+      font-size: 48px;
+      font-weight: 900;
+      margin-bottom: 16px;
+      background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .guide-header p {
+      font-size: 18px;
+      color: var(--text-secondary);
+      line-height: 1.7;
+    }
+
+    .guide-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .guide-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 32px;
+      transition: all 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .guide-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-purple));
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+
+    .guide-card:hover::before {
+      transform: scaleX(1);
+    }
+
+    .guide-card:hover {
+      transform: translateY(-8px);
+      background: rgba(15, 23, 36, 0.8);
+      border-color: rgba(59, 130, 246, 0.3);
+      box-shadow: 0 20px 60px rgba(59, 130, 246, 0.15);
+    }
+
+    .guide-icon {
+      width: 56px;
+      height: 56px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 900;
+      margin-bottom: 20px;
+      box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+      color: white;
+    }
+
+    .guide-title {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+    }
+
+    .guide-desc {
+      font-size: 15px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* About Section */
+    .about-section {
+      padding: 100px 0;
+      background: linear-gradient(180deg, transparent 0%, rgba(15, 23, 36, 0.5) 100%);
+    }
+
+    .about-content {
+      max-width: 900px;
+      margin: 0 auto;
+      text-align: center;
+    }
+
+    .about-header {
+      font-size: 48px;
+      font-weight: 900;
+      margin-bottom: 24px;
+      background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .about-text {
+      font-size: 17px;
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-bottom: 20px;
+    }
+
+    /* Footer */
+    .site-footer {
+      background: var(--bg-secondary);
+      border-top: 1px solid var(--border);
+      padding: 60px 0 30px;
+      margin-top: 0;
+    }
+
+    .footer-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 48px;
+      margin-bottom: 48px;
+    }
+
+    .footer-brand {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .footer-brand-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .footer-logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+      overflow: hidden; /* tambahkan ini */
+    }
+
+    .footer-brand h3 {
+      font-size: 18px;
+      margin: 0;
+      color: var(--text-primary);
+    }
+
+    .footer-brand p {
+      color: var(--text-secondary);
+      font-size: 14px;
+      line-height: 1.6;
+      margin: 0;
+    }
+
+    .footer-col h4 {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 16px;
+      color: var(--text-primary);
+    }
+
+    .footer-col a {
+      display: block;
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 14px;
+      margin-bottom: 10px;
+      transition: all 0.3s ease;
+    }
+
+    .footer-col a:hover {
+      color: var(--accent);
+      transform: translateX(4px);
+    }
+
+    .footer-bottom {
+      border-top: 1px solid var(--border);
+      padding-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.8);
+      backdrop-filter: blur(8px);
+      z-index: 9998;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .modal-card {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 40px;
+      max-width: 450px;
+      width: 100%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+      position: relative;
+      z-index: 9999;
+    }
+
+    .modal-card h3 {
+      font-size: 24px;
+      margin-bottom: 12px;
+      color: var(--text-primary);
+    }
+
+    .modal-card p {
+      color: var(--text-secondary);
+      margin-bottom: 24px;
+      line-height: 1.6;
+    }
+
+    .modal-actions {
+      display: flex;
+      gap: 12px;
+      justify-content: flex-end;
+    }
+
+    .modal-actions button {
+      padding: 10px 20px;
+      border-radius: 10px;
+      font-weight: 600;
+      font-size: 14px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .btn-cancel {
+      background: transparent;
+      border: 1px solid var(--border);
+      color: var(--text-secondary);
+    }
+
+    .btn-cancel:hover {
+      background: rgba(255, 255, 255, 0.05);
+      color: var(--text-primary);
+    }
+
+    .btn-register {
+      background: rgba(59, 130, 246, 0.1);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      color: var(--accent);
+    }
+
+    .btn-register:hover {
+      background: rgba(59, 130, 246, 0.2);
+    }
+
+    .btn-login {
+      background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+      color: white;
+      border: none;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+    }
+
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(59, 130, 246, 0.4);
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      h1 { font-size: 48px; }
+      .hero { grid-template-columns: 1fr; gap: 40px; }
+      .guide-grid { grid-template-columns: 1fr; }
+      .footer-grid { grid-template-columns: 1fr 1fr; }
+      nav { display: none; }
+    }
+
+    @media (max-width: 640px) {
+      h1 { font-size: 36px; }
+      p.lead { font-size: 16px; }
+      .hero-cta { flex-direction: column; }
+      .stats-grid { grid-template-columns: 1fr; }
+      .guide-header h2, .about-header { font-size: 32px; }
+      .footer-grid { grid-template-columns: 1fr; }
+    }
+
+    /* Accessibility - reduce motion */
+    @media (prefers-reduced-motion: reduce) {
+      * {
+        animation: none !important;
+        transition: none !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- Header -->
+    <header id="header">
+      <div class="header-content">
+        <div class="brand">
+          <div class="logo">
+            <img src="/images/logo_nd.jpg" alt="NeuroDetect Logo">
+          </div>
+          <div class="brand-text">
+            <div>NeuroDetect</div>
+            <div>Web Deteksi Dini Penyakit Stroke</div>
+          </div>
+        </div>
+
+        <nav>
+          <a href="/" class="nav-link nav-beranda <%= (req.path === '/') ? 'active' : '' %>">Beranda</a>
+          <a href="/diagnosa" class="nav-link protected-link">Diagnosa</a>
+          <a href="/riwayat" class="nav-link protected-link">Riwayat</a>
+          <a href="#panduan" class="nav-link nav-panduan">Panduan</a>
+          <a href="#tentang" class="nav-link nav-tentang">Tentang Website</a>
+        </nav>
+
+        <div class="cta">
+          <% if (req.session && req.session.user) { %>
+            <span class="user-greeting">Hi, <%= req.session.user.nama %></span>
+            <a href="/logout" class="btn-ghost">Logout</a>
+          <% } else { %>
+            <a href="/login-user" class="btn-ghost">Sign In</a>
+            <a href="/daftar" class="btn-primary">Get Started</a>
+          <% } %>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero Section -->
+    <main class="hero-wrap" role="main" aria-label="Beranda">
+      <div class="hero">
+        <section class="hero-content">
+          <span class="badge">Web Deteksi Dini Penyakit Stroke No.1 di Dunia</span>
+          <h1>Sistem Pakar Deteksi Dini Penyakit Stroke</h1>
+          <p class="lead">Deteksi penyakit neurologis tingkat lanjut menggunakan metodologi Forward Chaining dan Certainty Factor. Dapatkan wawasan akurat dan tindakan yang direkomendasikan berdasarkan gejala yang anda pilih.</p>
+
+          <div class="hero-cta">
+            <a class="btn-primary protected-link" href="/diagnosa" data-protected="true">Diagnosa Sekarang →</a>
+          </div>
+
+          <div class="features" aria-hidden="true">
+            <div class="feature">Real-time Analysis</div>
+            <div class="feature">Forward Chaining Method</div>
+            <div class="feature">Certainty Factor Method</div>
+          </div>
+        </section>
+
+        <aside class="hero-visual" aria-hidden="true">
+          <div class="card-hero">
+            <img src="/images/hero-brain.jpg" alt="Brain illustration" onerror="this.onerror=null;this.src='https://images.unsplash.com/photo-1559757175-0eb30cd8c063?w=600&h=600&fit=crop'">
+            
+            <div class="stats-grid">
+              <div class="stat-card">
+                <div class="stat-number">98%</div>
+                <div class="stat-label">Akurasi</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number">5K+</div>
+                <div class="stat-label">Pengguna</div>
+              </div>
+              <div class="stat-card">
+                <div class="stat-number">24/7</div>
+                <div class="stat-label">Tersedia</div>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </main>
+
+    <!-- Panduan Section -->
+    <section id="panduan" class="guide-section" aria-labelledby="guideTitle">
+      <div class="guide-header">
+        <div class="section-badge">Cara Kerja</div>
+        <h2 id="guideTitle">Panduan Penggunaan</h2>
+        <p>Panduan singkat cara memakai NeuroDetect untuk mendapatkan diagnosa dini secara cepat dan akurat.</p>
+      </div>
+
+      <div class="guide-grid">
+        <div class="guide-card">
+          <div class="guide-icon">1</div>
+          <div class="guide-title">Pilih Gejala (Select Symptoms)</div>
+          <div class="guide-desc">
+            Masuk ke halaman Diagnosa dan pilih semua gejala yang Anda rasakan dari daftar. Anda bisa memilih lebih dari satu gejala. Pastikan memilih gejala yang paling sesuai untuk akurasi yang lebih baik.
+          </div>
+        </div>
+
+        <div class="guide-card">
+          <div class="guide-icon">2</div>
+          <div class="guide-title">Analisis AI (Forward Chaining + CF)</div>
+          <div class="guide-desc">
+            Sistem memproses input Anda menggunakan metode Forward Chaining untuk memilih kandidat penyakit, lalu menggabungkan bobot MB/MD (Certainty Factor) untuk menghitung tingkat keyakinan akhir.
+          </div>
+        </div>
+
+        <div class="guide-card">
+          <div class="guide-icon">3</div>
+          <div class="guide-title">Hasil & Rekomendasi (Get Results)</div>
+          <div class="guide-desc">
+            Lihat hasil diagnosa yang menampilkan nama penyakit, persentase tingkat keyakinan, deskripsi singkat, dan saran penanganan. Simpan riwayat diagnosa untuk referensi di masa depan.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Tentang Section -->
+    <section id="tentang" class="about-section" aria-labelledby="aboutTitle">
+      <div class="about-content">
+        <div class="section-badge">Tentang Kami</div>
+        <h3 id="aboutTitle" class="about-header">Tentang NeuroDetect</h3>
+        <p class="about-text">
+          NeuroDetect adalah sistem pakar berbasis web yang dirancang untuk membantu deteksi dini kondisi neurologis, seperti stroke, menggunakan pendekatan rule-based (Forward Chaining) dan metode Certainty Factor. Sistem ini bertujuan memberikan rekomendasi awal yang dapat membantu pengguna atau tenaga kesehatan dalam mengambil langkah lanjutan.
+        </p>
+        <p class="about-text">
+          Fitur utama: manajemen gejala dan penyakit (admin), proses diagnosa berbasis aturan, perhitungan tingkat keyakinan (CF), dan riwayat diagnosa untuk referensi. Aplikasi ini dibuat untuk tujuan penelitian dan edukasi — bukan pengganti diagnosis medis profesional.
+        </p>
+      </div>
+    </section>
+
+  </div> <!-- end container -->
+
+  <!-- Footer -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="footer-inner">
+      <div class="footer-grid">
+        <div class="footer-brand">
+          <div class="footer-brand-header">
+            <div class="logo">
+              <img src="/images/logo_nd.jpg" alt="NeuroDetect Logo">
+            </div>
+            <div>
+              <h3>NeuroDetect</h3>
+              <p style="font-size:13px;margin-top:4px">Advanced neurological disease detection system</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="footer-col">
+          <h4>Product</h4>
+          <a href="#panduan">Fitur</a>
+          <a href="#panduan">How it Works</a>
+          <a href="#tentang">Pricing</a>
+        </div>
+
+        <div class="footer-col">
+          <h4>Perusahaan</h4>
+          <a href="#tentang">Tentang Kami</a>
+          <a href="/about">Kontak</a>
+          <a href="/about">Kebijakan Privasi</a>
+        </div>
+
+        <div class="footer-col">
+          <h4>Support</h4>
+          <a href="/about">Dokumentasi</a>
+          <a href="/about">Help Center</a>
+          <a href="/about">FAQ</a>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <div>© 2025 NeuroDetect. All rights reserved.</div>
+        <div>Powered by MahfuDhoni</div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Modal -->
+  <div id="protectedModal" class="modal-backdrop" aria-hidden="true">
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <h3 id="modalTitle">Please sign in first</h3>
+      <p>You must be logged in to start a diagnosis or view your history. Please sign in or create an account to continue.</p>
+      <div class="modal-actions">
+        <button id="modalCancel" class="btn-cancel">Cancel</button>
+        <button id="modalRegister" class="btn-register">Register</button>
+        <button id="modalLogin" class="btn-login">Login</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Safer boolean injection for JS
+    const IS_LOGGED_IN = <%- JSON.stringify(req && req.session && req.session.user ? true : false) %>;
+
+    (function() {
+      // Header scroll effect
+      const header = document.getElementById('header');
+      window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+          header.classList.add('scrolled');
+        } else {
+          header.classList.remove('scrolled');
+        }
+      });
+
+      // Modal functionality
+      const modal = document.getElementById('protectedModal');
+      const btnCancel = document.getElementById('modalCancel');
+      const btnLogin = document.getElementById('modalLogin');
+      const btnRegister = document.getElementById('modalRegister');
+
+      function showModal() {
+        modal.style.display = 'flex';
+        modal.setAttribute('aria-hidden', 'false');
+      }
+      
+      function hideModal() {
+        modal.style.display = 'none';
+        modal.setAttribute('aria-hidden', 'true');
+      }
+
+      // Event listeners
+      btnCancel.addEventListener('click', hideModal);
+      btnLogin.addEventListener('click', function() {
+        window.location.href = '/login-user';
+      });
+      btnRegister.addEventListener('click', function() {
+        window.location.href = '/daftar';
+      });
+
+      // Protected links
+      const protectedEls = Array.from(document.querySelectorAll('[data-protected="true"], .protected-link'));
+      protectedEls.forEach(el => {
+        el.addEventListener('click', function(e) {
+          if (IS_LOGGED_IN === true) return;
+          e.preventDefault();
+          showModal();
+        });
+      });
+
+      // Close modal on ESC
+      document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') hideModal();
+      });
+
+      // Click outside modal to close
+      modal.addEventListener('click', function(e) {
+        if (e.target === modal) hideModal();
+      });
+    })();
+  </script>
+</body>
+</html>

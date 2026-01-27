@@ -1,0 +1,292 @@
+<style>
+.sidebar {
+  width: var(--sidebar-width);
+  background: var(--bg-secondary);
+  border-right: 1px solid var(--border);
+  color: var(--text-primary);
+  padding: 24px 16px;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow-y: auto;
+}
+
+.sidebar::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 3px;
+  height: 100%;
+  background: linear-gradient(180deg, var(--accent), var(--accent-purple));
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  margin-bottom: 32px;
+  border-radius: 12px;
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+  transition: all 0.3s ease;
+}
+
+.brand:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.15);
+}
+
+.logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 8px 24px rgba(59, 130, 246, 0.3);
+  overflow: hidden; /* tambahkan ini */
+}
+
+.logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover; /* agar gambar fit dengan baik */
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.brand .title {
+  font-weight: 800;
+  font-size: 16px;
+  line-height: 1.2;
+  color: var(--text-primary);
+}
+
+.brand .sub {
+  font-size: 11px;
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.nav-section {
+  margin-bottom: 24px;
+}
+
+.nav-section-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 0 12px 8px;
+  margin-bottom: 8px;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.nav a {
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border-radius: 10px;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--text-secondary);
+  transition: all 0.3s ease;
+  border: 1px solid transparent;
+  position: relative;
+}
+
+.nav a::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 0;
+  background: linear-gradient(180deg, var(--accent), var(--accent-purple));
+  border-radius: 0 2px 2px 0;
+  transition: height 0.3s ease;
+}
+
+.nav a:hover {
+  color: var(--text-primary);
+  background: rgba(59, 130, 246, 0.1);
+  border-color: rgba(59, 130, 246, 0.2);
+  transform: translateX(4px);
+}
+
+.nav a:hover::before {
+  height: 60%;
+}
+
+.nav a.active {
+  color: var(--text-primary);
+  background: rgba(59, 130, 246, 0.15);
+  border-color: rgba(59, 130, 246, 0.3);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);
+}
+
+.nav a.active::before {
+  height: 60%;
+}
+
+.nav-icon {
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  padding: 16px 12px;
+  border-radius: 10px;
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--border);
+}
+
+.footer-label {
+  font-size: 11px;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 6px;
+  font-weight: 600;
+}
+
+.footer-user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.footer-avatar {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 13px;
+  color: white;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.footer-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.footer-role {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+/* Scrollbar styling */
+.sidebar::-webkit-scrollbar {
+  width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.2);
+  border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.3);
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    display: none;
+  }
+}
+</style>
+   
+<!-- SIDEBAR -->
+<aside class="sidebar" role="navigation" aria-label="Sidebar admin">
+  <div class="brand">
+    <div class="logo">
+      <img src="/images/logo_nd.jpg" alt="NeuroDetect Logo">
+    </div>
+    <div class="brand-text">
+      <div class="title">NeuroDetect</div>
+      <div class="sub">Admin Panel</div>
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-section-title">Menu</div>
+    <nav class="nav" id="sidebarNav">
+      <a href="/admin" class="<%= (typeof page !== 'undefined' && page === 'dashboard') ? 'active' : '' %>">
+        <span class="nav-icon">📊</span>
+        <span>Dashboard</span>
+      </a>
+      <a href="/admin/user" class="<%= (typeof page !== 'undefined' && page === 'user') ? 'active' : '' %>">
+        <span class="nav-icon">👥</span>
+        <span>Daftar User</span>
+      </a>
+      <a href="/admin/penyakit" class="<%= (typeof page !== 'undefined' && page === 'penyakit') ? 'active' : '' %>">
+        <span class="nav-icon">🩺</span>
+        <span>Daftar Penyakit</span>
+      </a>
+      <a href="/admin/gejala" class="<%= (typeof page !== 'undefined' && page === 'gejala') ? 'active' : '' %>">
+        <span class="nav-icon">📝</span>
+        <span>Daftar Gejala</span>
+      </a>
+      <a href="/admin/relasi" class="<%= (typeof page !== 'undefined' && page === 'relasi') ? 'active' : '' %>">
+        <span class="nav-icon">🔗</span>
+        <span>Kelola Relasi</span>
+      </a>
+    </nav>
+  </div>
+
+  <div class="sidebar-footer">
+    <div class="footer-label">Logged in as</div>
+    <div class="footer-user">
+      <div class="footer-avatar"><%= user.nama.charAt(0).toUpperCase() %></div>
+      <div>
+        <div class="footer-name"><%= user.nama %></div>
+        <div class="footer-role">Administrator</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<script>
+  // Highlight active menu based on current path
+  document.addEventListener('DOMContentLoaded', () => {
+    const currentPath = window.location.pathname;
+    const navLinks = document.querySelectorAll('.nav a');
+    
+    navLinks.forEach(link => {
+      if (link.getAttribute('href') === currentPath) {
+        link.classList.add('active');
+      }
+    });
+  });
+</script>

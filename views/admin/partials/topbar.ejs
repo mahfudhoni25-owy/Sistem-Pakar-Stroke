@@ -1,0 +1,251 @@
+<style>
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 32px;
+  background: var(--card-bg);
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid var(--border);
+  color: var(--text-primary);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.topbar .left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.topbar .title {
+  font-size: 24px;
+  font-weight: 800;
+  background: linear-gradient(135deg, #ffffff 0%, #94a3b8 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.topbar .right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.user-menu {
+  position: relative;
+}
+
+.user-trigger {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  background: rgba(15, 23, 36, 0.4);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.user-trigger:hover {
+  background: rgba(15, 23, 36, 0.6);
+  border-color: rgba(59, 130, 246, 0.3);
+  transform: translateY(-2px);
+}
+
+.user-info {
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.user-name {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.user-role {
+  font-size: 11px;
+  color: var(--text-secondary);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.admin-badge {
+  padding: 2px 6px;
+  background: rgba(139, 92, 246, 0.15);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  color: var(--accent-purple);
+  border-radius: 4px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  font-size: 16px;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+
+.dropdown-icon {
+  color: var(--text-secondary);
+  font-size: 12px;
+  transition: transform 0.3s ease;
+}
+
+.user-menu.active .dropdown-icon {
+  transform: rotate(180deg);
+}
+
+.user-dropdown {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  min-width: 200px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 8px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-10px);
+  transition: all 0.3s ease;
+  z-index: 1000;
+}
+
+.user-menu.active .user-dropdown {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  color: var(--text-secondary);
+  text-decoration: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.3s ease;
+  cursor: pointer;
+  border: none;
+  background: none;
+  width: 100%;
+  text-align: left;
+}
+
+.dropdown-item:hover {
+  background: rgba(59, 130, 246, 0.1);
+  color: var(--text-primary);
+}
+
+.dropdown-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 8px 0;
+}
+
+.dropdown-item.logout {
+  color: #ef4444;
+}
+
+.dropdown-item.logout:hover {
+  background: rgba(239, 68, 68, 0.1);
+}
+
+@media (max-width: 768px) {
+  .topbar {
+    padding: 16px 20px;
+  }
+  
+  .topbar .title {
+    font-size: 20px;
+  }
+  
+  .user-info {
+    display: none;
+  }
+}
+</style>
+      
+<!-- TOPBAR -->
+<header class="topbar" role="banner">
+  <div class="left">
+    <div class="title" id="pageTitle"><%= title || 'Dashboard' %></div>
+  </div>
+  
+  <div class="right">
+    <div class="user-menu" id="userMenu">
+      <div class="user-trigger" onclick="toggleUserMenu()">
+        <div class="user-info">
+          <div class="user-name"><%= user.nama %></div>
+          <div class="user-role">
+            <span class="admin-badge">Admin</span>
+          </div>
+        </div>
+        <div class="avatar"><%= user.nama.charAt(0).toUpperCase() %></div>
+        <span class="dropdown-icon">▼</span>
+      </div>
+
+      <div class="user-dropdown">
+        <a href="/admin/dashboard" class="dropdown-item">
+          <span>📊</span>
+          <span>Dashboard</span>
+        </a>
+        <a href="/admin/user" class="dropdown-item">
+          <span>👥</span>
+          <span>Kelola User</span>
+        </a>
+        <div class="dropdown-divider"></div>
+        <a href="/logout" class="dropdown-item logout">
+          <span>🔐</span>
+          <span>Logout</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<script>
+  function toggleUserMenu() {
+    const userMenu = document.getElementById('userMenu');
+    userMenu.classList.toggle('active');
+  }
+
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    const userMenu = document.getElementById('userMenu');
+    if (userMenu && !userMenu.contains(e.target)) {
+      userMenu.classList.remove('active');
+    }
+  });
+
+  // Close on ESC key
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      const userMenu = document.getElementById('userMenu');
+      if (userMenu) {
+        userMenu.classList.remove('active');
+      }
+    }
+  });
+</script>
