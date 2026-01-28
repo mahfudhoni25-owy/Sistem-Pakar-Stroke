@@ -498,7 +498,6 @@
                 <th>Nama Lengkap</th>
                 <th>Username</th>
                 <th>Role</th>
-                <th width="180">Aksi</th>
               </tr>
             </thead>
             <tbody id="tableUser">
@@ -578,19 +577,6 @@
           <td><strong>${esc(u.nama)}</strong></td>
           <td>${esc(u.username)}</td>
           <td><span class="badge ${roleClass}">${esc(u.role)}</span></td>
-          <td>
-            <div class="actions">
-              <button class="btn-small btn-edit" onclick="edit('${u.id}')">
-                ✏️ Edit
-              </button>
-              ${u.role!=='admin'
-                ? `<button class="btn-small btn-delete" onclick="hapus('${u.id}')">
-                    🗑️ Hapus
-                  </button>`
-                : ''
-              }
-            </div>
-          </td>
         </tr>`;
     });
   }

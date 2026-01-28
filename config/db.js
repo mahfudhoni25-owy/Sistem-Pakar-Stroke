@@ -1,21 +1,27 @@
 const mysql = require('mysql2');
 
-// SESUAIKAN dengan pengaturan XAMPP kamu
 const pool = mysql.createPool({
-  host: 'localhost',
-  user: 'root',          // default XAMPP
-  password: '',          // kalau pakai password, isi di sini
-  database: 'db_stroke_pakar'  // nama DB yang sudah kamu buat
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASS,
+  database: process.env.DB_NAME,
+  port: process.env.DB_PORT,
+  waitForConnections: true,
+  connectionLimit: 10,
+  queueLimit: 0,
+  ssl: {
+    rejectUnauthorized: false
+  }
 });
 
-// optional: test koneksi saat start
+// Test koneksi saat start
 pool.getConnection((err, conn) => {
   if (err) {
-    console.error('Gagal konek ke database:', err.message);
+    console.error('Gagal konek ke database:', err);
   } else {
-    console.log('Berhasil konek ke database MySQL');
+    console.log('Berhasil konek ke database Railway MySQL');
     conn.release();
   }
 });
 
-module.exports = pool.promise(); // pakai versi promise biar enak dipakai async/await
+module.exports = pool.promise();
